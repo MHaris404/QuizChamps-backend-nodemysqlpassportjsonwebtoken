@@ -3,8 +3,8 @@ module.exports = {
     'connection': {
         'host': 'localhost',
         'user': 'root',
-        'password': 'password',
+        'password': '',
     },
-	'database': 'excelData',
+	'database': 'dbAliQuiz',
   'users_table': 'users'
 };

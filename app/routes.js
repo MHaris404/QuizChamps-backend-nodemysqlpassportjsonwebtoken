@@ -60,7 +60,7 @@ module.exports = function (app, passport, SERVER_SECRET) {
 	}));
 	// return messages for signup users
 	app.get('/signup/successjson', function (req, res) {
-		res.json({ status: 'success', message: 'User  created', user: req.user.username, });
+		res.json({ status: 'success', message: 'User created', user: req.user.username, });
 	});
 
 	app.get('/signup/failurejson', function (req, res) {
