@@ -14,7 +14,13 @@ module.exports = function (app, passport, SERVER_SECRET) {
 		passport.authenticate('local-login', function (err, user, info) {
 			if (err) { return next(err); }
 			// stop if it fails
-			if (!user) { return res.json({ status: 'failure', message: 'Invalid Username or Password' }); }
+			if (!user) {
+				return res.json({
+					status: false,
+					message: 'Invalid Username or Password',
+					info: info
+				});
+			}
 
 			req.logIn(user, function (err) {
 				// return if does not match
@@ -36,17 +42,22 @@ module.exports = function (app, passport, SERVER_SECRET) {
 
 				// create token
 				const jwt = require('jsonwebtoken');
-				req.token = jwt.sign({
-					id: req.user.id,
-				}, SERVER_SECRET, {
-					expiresIn: 60 * 60 //1hr
-				});
+				req.token = jwt.sign(
+					{
+						id: req.user.id, //id = username
+					},
+					SERVER_SECRET,
+					{
+						expiresIn: 300000
+					}
+				);
 
 				// lastly respond with json
 				return res.status(200).json({
-					status: 'success',
+					status: true,
 					username: req.user.id,
-					token: req.token
+					token: req.token,
+					details: user
 				});
 			});
 		})(req, res, next);
@@ -59,11 +70,13 @@ module.exports = function (app, passport, SERVER_SECRET) {
 	app.post('/endpoint/v1/signup', passport.authenticate('local-signup', {
 		successRedirect: '/signup/successjson',
 		failureRedirect: '/signup/failurejson',
-		failureFlash: true
+		failureFlash: false
 	}));
 	// return messages for signup users
 	app.get('/signup/successjson', function (req, res) {
-		res.json({ status: 'success', message: 'User created', user: req.user.username, });
+		res.json({ status: 'success', message: 'User created', 
+		// details: req.session.passport 
+	});
 	});
 
 	app.get('/signup/failurejson', function (req, res) {
@@ -81,10 +94,10 @@ module.exports = function (app, passport, SERVER_SECRET) {
 				res
 					.status(200)
 					.clearCookie('connect.sid', { path: '/' })
-					.json({ status: 'success', message: 'logout' });
+					.json({ status: true, message: 'logout Successful' });
 			} else {
 				res
-					.json({ status: 'failure', message: err });
+					.json({ status: false, message: err });
 			}
 
 		});
@@ -95,13 +108,13 @@ module.exports = function (app, passport, SERVER_SECRET) {
 	// ==================== Allows users to check if logged in ========================
 
 	app.get('/endpoint/v1/isloggedin', function (req, res) {
-		if (!req.isAuthenticated())
-			res.status(401).send({ status: 'failure', authenticated: 'false' });
-		else {
+		if (req.isAuthenticated())
 			if (req.session.id && req.user.username)
-				res.status(200).send({ status: 'success', loggedIn: 'true', user: req.user.username });
+				res.status(200).send({ status: true, loggedIn: true, user: req.user });
 			else
-				res.status(401).send({ status: 'failure', loggedIn: 'false' });
+				res.status(401).send({ status: true, loggedIn: false });
+		else {
+			res.status(401).send({ status: false, authenticated: false });
 		}
 	});
 
@@ -125,7 +138,7 @@ module.exports = function (app, passport, SERVER_SECRET) {
 
 	// GET, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/product/api/get?c={target_column}&q={target_value}&order={orderby}
-	app.get('/endpoint/v1/product/api/get', authenticate, REST_GET.findByColumn);
+	app.get('/endpoint/v1/get/currUserDetails', authenticate, REST_GET.findByColumn);
 
 	// GET, EndPoint:
 	// https://127.0.0.1:5000/endpoint/v1/product/api/get/search/?c={target_column}&start={start}&end={end}&order={orderby}

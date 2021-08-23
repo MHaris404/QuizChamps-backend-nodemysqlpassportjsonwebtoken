@@ -36,21 +36,21 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 // config passport
+app.use(cors())
 app.use(session({
 	secret: 'harisSessionSecret',
-	resave: false,
+	resave: true,
 	saveUninitialized: true
 })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-
 // Set Https certificate
-var options = {
-	key: fs.readFileSync('privateKey.key'),
-	cert: fs.readFileSync('certificate.crt')
-};
+// var options = {
+// 	key: fs.readFileSync('privateKey.key'),
+// 	cert: fs.readFileSync('certificate.crt')
+// };
 
 const SERVER_SECRET = 'harisServerSecret';
 
@@ -58,6 +58,7 @@ const SERVER_SECRET = 'harisServerSecret';
 require('./app/routes.js')(app, passport, SERVER_SECRET); // load our routes and pass in our app and fully configured passport
 
 // Create server
-https.createServer(options, app).listen(port, function () {
+// https.createServer(options, app)
+app.listen(port, function () {
 	console.log('Server listening on port ' + port);
 });

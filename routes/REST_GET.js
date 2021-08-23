@@ -1,5 +1,5 @@
 // Given a certain column and target value, get records
-// endpoint/v1/product/api/get/?c={target_column}&q={target_value}&order={orderby}
+// endpoint/v1/get/currUserDetails/?c={target_column}&q={target_value}&order={orderby}
 exports.findByColumn = function (req, res) {
 	var connection = require('../model/dbconnection');
 	var column = req.query.c;
