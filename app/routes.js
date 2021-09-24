@@ -57,7 +57,7 @@ module.exports = function (app, passport, SERVER_SECRET) {
 				);
 
 
-				
+
 				// lastly respond with json
 				return res.status(200).json({
 					status: true,
@@ -151,9 +151,37 @@ module.exports = function (app, passport, SERVER_SECRET) {
 	// https://127.0.0.1:5000/endpoint/v1/product/api/get/search/?c={target_column}&start={start}&end={end}&order={orderby}
 	app.get('/endpoint/v1/product/api/get/search', authenticate, REST_GET.rangeSearch);
 
+	// GET, EndPoint:
+	// https://127.0.0.1:5000/endpoint/v1/get/category/all
+	app.get('/endpoint/v1/get/category/all', authenticate, REST_GET.getAllCategories);
+
+	// GET, EndPoint:
+	// https://127.0.0.1:5000/endpoint/v1/get/question?categoryid
+	app.get('/endpoint/v1/get/question', authenticate, REST_GET.getQuestionsbyCategoryid);
+
+	// GET, EndPoint:
+	// http://10.1.101.206:5000/endpoint/v1/get/option?questionid=3
+	app.get('/endpoint/v1/get/option', authenticate, REST_GET.getOptionsbyQuestionId);
+
+	// GET, EndPoint:
+	// http://10.1.101.206:5000/endpoint/v1/get/score?userid=1&categoryid=1
+	app.get('/endpoint/v1/get/score', authenticate, REST_GET.getScorebyUser_Category);
+
 	// POST, Endpoint:
-	// https://127.0.0.1:5000/endpoint/v1/product/api/add?content=1,2,3...
-	app.post('/endpoint/v1/product/api/add', authenticate, REST_POST.addOne);
+	// https://127.0.0.1:5000/endpoint/v1/add/category?categoryName=&categoryScore=
+	app.post('/endpoint/v1/add/category', authenticate, REST_POST.addOneCategory);
+
+	// POST, Endpoint:
+	// https://127.0.0.1:5000/endpoint/v1/add/question?
+	app.post('/endpoint/v1/add/question', authenticate, REST_POST.addOneQuestion);
+
+	// POST, Endpoint:
+	// https://127.0.0.1:5000/endpoint/v1/add/option?
+	app.post('/endpoint/v1/add/option', authenticate, REST_POST.addOptions);
+
+	// POST, Endpoint:
+	// https://127.0.0.1:5000/endpoint/v1/add/score?
+	app.post('/endpoint/v1/add/score', authenticate, REST_POST.addUserCategoryScore);
 
 	// POST, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/product/api/add/batch?content[0]=1,2,3,...&content[1]=1,2,3...
