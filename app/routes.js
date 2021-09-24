@@ -18,7 +18,7 @@ module.exports = function (app, passport, SERVER_SECRET) {
 				return res.json({
 					status: false,
 					message: 'Invalid Username or Password',
-					info: info
+					info
 				});
 			}
 
@@ -40,6 +40,10 @@ module.exports = function (app, passport, SERVER_SECRET) {
 					};
 				});
 
+
+
+
+
 				// create token
 				const jwt = require('jsonwebtoken');
 				req.token = jwt.sign(
@@ -52,6 +56,8 @@ module.exports = function (app, passport, SERVER_SECRET) {
 					}
 				);
 
+
+				
 				// lastly respond with json
 				return res.status(200).json({
 					status: true,
@@ -70,17 +76,18 @@ module.exports = function (app, passport, SERVER_SECRET) {
 	app.post('/endpoint/v1/signup', passport.authenticate('local-signup', {
 		successRedirect: '/signup/successjson',
 		failureRedirect: '/signup/failurejson',
-		failureFlash: false
+		failureFlash: true
 	}));
 	// return messages for signup users
 	app.get('/signup/successjson', function (req, res) {
-		res.json({ status: 'success', message: 'User created', 
-		// details: req.session.passport 
-	});
+		res.json({
+			status: true, message: 'User created',
+			// details: req.session.passport 
+		});
 	});
 
 	app.get('/signup/failurejson', function (req, res) {
-		res.json({ status: 'failure', message: 'User already exists' });
+		res.json({ status: false, message: "fail" });
 	});
 
 	// =============================================================================
@@ -112,7 +119,7 @@ module.exports = function (app, passport, SERVER_SECRET) {
 			if (req.session.id && req.user.username)
 				res.status(200).send({ status: true, loggedIn: true, user: req.user });
 			else
-				res.status(401).send({ status: true, loggedIn: false });
+				res.status(401).send({ status: false, loggedIn: false });
 		else {
 			res.status(401).send({ status: false, authenticated: false });
 		}
