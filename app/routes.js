@@ -40,10 +40,6 @@ module.exports = function (app, passport, SERVER_SECRET) {
 					};
 				});
 
-
-
-
-
 				// create token
 				const jwt = require('jsonwebtoken');
 				req.token = jwt.sign(
@@ -55,8 +51,6 @@ module.exports = function (app, passport, SERVER_SECRET) {
 						expiresIn: 300000
 					}
 				);
-
-
 
 				// lastly respond with json
 				return res.status(200).json({
@@ -141,15 +135,15 @@ module.exports = function (app, passport, SERVER_SECRET) {
 
 	// GET, EndPoint:
 	// https://127.0.0.1:5000/endpoint/v1/product/api/all?order={orderby}
-	app.get('/endpoint/v1/product/api/get/all', authenticate, REST_GET.getAllRecords);
+	//app.get('/endpoint/v1/product/api/get/all', authenticate, REST_GET.getAllRecords);
 
 	// GET, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/product/api/get?c={target_column}&q={target_value}&order={orderby}
-	app.get('/endpoint/v1/get/currUserDetails', authenticate, REST_GET.findByColumn);
+	//app.get('/endpoint/v1/get/currUserDetails', authenticate, REST_GET.findByColumn);
 
 	// GET, EndPoint:
 	// https://127.0.0.1:5000/endpoint/v1/product/api/get/search/?c={target_column}&start={start}&end={end}&order={orderby}
-	app.get('/endpoint/v1/product/api/get/search', authenticate, REST_GET.rangeSearch);
+	//app.get('/endpoint/v1/product/api/get/search', authenticate, REST_GET.rangeSearch);
 
 	// GET, EndPoint:
 	// https://127.0.0.1:5000/endpoint/v1/get/category/all
@@ -161,26 +155,27 @@ module.exports = function (app, passport, SERVER_SECRET) {
 
 	// GET, EndPoint:
 	// http://10.1.101.206:5000/endpoint/v1/get/option?questionid=3
-	app.get('/endpoint/v1/get/option', authenticate, REST_GET.getOptionsbyQuestionId);
-
+	// app.get('/endpoint/v1/get/option', authenticate, REST_GET.getOptionsbyQuestionId);
+ 
 	// GET, EndPoint:
-	// http://10.1.101.206:5000/endpoint/v1/get/score?userid=1&categoryid=1
-	app.get('/endpoint/v1/get/score', authenticate, REST_GET.getScorebyUser_Category);
+	// http://10.1.101.206:5000/endpoint/v1/get/score?userid=1
+	app.get('/endpoint/v1/get/score', authenticate, REST_GET.getScorebyUser);
 
 	// POST, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/add/category?categoryName=&categoryScore=
 	app.post('/endpoint/v1/add/category', authenticate, REST_POST.addOneCategory);
 
 	// POST, Endpoint:
-	// https://127.0.0.1:5000/endpoint/v1/add/question?
+	// https://127.0.0.1:5000/endpoint/v1/add/question?option1?option2?option3?option4?correctOption?
 	app.post('/endpoint/v1/add/question', authenticate, REST_POST.addOneQuestion);
 
 	// POST, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/add/option?
-	app.post('/endpoint/v1/add/option', authenticate, REST_POST.addOptions);
+	// app.post('/endpoint/v1/add/option', authenticate, REST_POST.addOptions);
 
 	// POST, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/add/score?
+	////http://${IP}:5000/endpoint/v1/add/score?userCategoryScore=${score}&categoryid=${catId}&usersid=${userid}&categoryName=${science}
 	app.post('/endpoint/v1/add/score', authenticate, REST_POST.addUserCategoryScore);
 
 	// POST, Endpoint:

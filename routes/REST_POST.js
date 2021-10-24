@@ -1,3 +1,4 @@
+
 // endpoint/v1/product/api/add/category?
 exports.addOneCategory = function (req, res) {
 	var connection = require('../model/dbconnection');
@@ -27,14 +28,19 @@ exports.addOneCategory = function (req, res) {
 
 };
 
-// endpoint/v1/product/api/add/question?
+// endpoint/v1/product/api/add/question?option1?option2?option3?option4?correctOption?
 exports.addOneQuestion = function (req, res) {
 	var connection = require('../model/dbconnection');
 	var response = [];
 
 	var content = {
 		question: req.query.question,
-		categoryid: req.query.categoryid
+		categoryid: req.query.categoryid,
+		option1: req.query.option1,
+		option2: req.query.option2,
+		option3: req.query.option3,
+		option4: req.query.option4,
+		correctOption: req.query.correctOption
 	};
 
 	connection.query('INSERT INTO questions SET ? ', content,
@@ -57,39 +63,41 @@ exports.addOneQuestion = function (req, res) {
 };
 
 // endpoint/v1/product/api/add/option?
-exports.addOptions = function (req, res) {
-	var connection = require('../model/dbconnection');
-	var response = [];
+// exports.addOptions = function (req, res) {
+// 	var connection = require('../model/dbconnection');
+// 	var response = [];
 
-	var content = {
-		questionid: req.query.questionid,
-		option1: req.query.option1,
-		option2: req.query.option2,
-		option3: req.query.option3,
-		option4: req.query.option4,
-		correctOption: req.query.correctOption
-	};
+// 	var content = {
+// 		questionid: req.query.questionid,
+// 		option1: req.query.option1,
+// 		option2: req.query.option2,
+// 		option3: req.query.option3,
+// 		option4: req.query.option4,
+// 		correctOption: req.query.correctOption
+// 	};
 
-	connection.query('INSERT INTO options SET ? ', content,
-		function (err, result) {
-			if (!err) {
+// 	connection.query('INSERT INTO options SET ? ', content,
+// 		function (err, result) {
+// 			if (!err) {
 
-				if (result.affectedRows != 0) {
-					response.push({ status: true, msg: "successfully added ", result: result });
-				} else {
-					response.push({ status: false, msg: 'No row affected' });
-				}
+// 				if (result.affectedRows != 0) {
+// 					response.push({ status: true, msg: "successfully added ", result: result });
+// 				} else {
+// 					response.push({ status: false, msg: 'No row affected' });
+// 				}
 
-				res.setHeader('Content-Type', 'application/json');
-				res.status(200).send(JSON.stringify(response));
-			} else {
-				res.status(400).send({ success: false, msg: err.sqlMessage });
-			}
-		});
+// 				res.setHeader('Content-Type', 'application/json');
+// 				res.status(200).send(JSON.stringify(response));
+// 			} else {
+// 				res.status(400).send({ success: false, msg: err.sqlMessage });
+// 			}
+// 		});
 
-};
+// };
 
-// endpoint/v1/product/api/add/option?
+// endpoint/v1/product/api/add/score?
+//http://${IP}:5000/endpoint/v1/add/score?userCategoryScore=${score}&categoryid=${catId}&usersid=${userid}
+
 exports.addUserCategoryScore = function (req, res) {
 	var connection = require('../model/dbconnection');
 	var response = [];
@@ -97,21 +105,66 @@ exports.addUserCategoryScore = function (req, res) {
 	var content = {
 		usersid: req.query.usersid,
 		categoryid: req.query.categoryid,
-		userCategoryScore: req.query.userCategoryScore
+		userCategoryScore: req.query.userCategoryScore,
+		categoryName: req.query.categoryName
 	};
 
-	connection.query('INSERT INTO scores SET ? ', content,
+	connection.query(`SELECT COUNT(1) as counter FROM scores WHERE usersid = ${content.usersid} AND categoryid = ${content.categoryid}`,
 		function (err, result) {
 			if (!err) {
 
-				if (result.affectedRows != 0) {
-					response.push({ status: true, msg: "successfully added ", result: result });
+				if (result[0].counter != 0) {
+
+					let query = `SELECT id FROM scores WHERE usersid = ${content.usersid} AND categoryid = ${content.categoryid}`;
+					connection.query(query,
+						function (err, result) {
+							if (!err) {
+
+								connection.query(`UPDATE scores SET userCategoryScore = ${content.userCategoryScore} WHERE id = ${result[0].id}`,
+									function (err, result) {
+
+										if (!err) {
+
+											if (result.affectedRows != 0) {
+												response.push({ status: true, msg: "Successfully saved ", result: result });
+											} else {
+												response.push({ status: false, msg: 'No row affected' });
+											}
+
+											res.setHeader('Content-Type', 'application/json');
+											res.status(200).send(JSON.stringify(response));
+										} else {
+											res.status(400).send({ success: false, msg: err.sqlMessage });
+										}
+									});
+
+							} else {
+								res.status(400).send({ success: false, msg: err.sqlMessage });
+							}
+						});
+
 				} else {
-					response.push({ status: false, msg: 'No row affected' });
+
+					connection.query(`INSERT INTO scores SET ?`, content,
+						function (err, result) {
+
+							if (!err) {
+
+								if (result.affectedRows != 0) {
+									response.push({ status: true, msg: "Successfully saved ", result: result });
+								} else {
+									response.push({ status: false, msg: 'No row affected' });
+								}
+
+								res.setHeader('Content-Type', 'application/json');
+								res.status(200).send(JSON.stringify(response));
+							} else {
+								res.status(400).send({ success: false, msg: err.sqlMessage });
+							}
+						});
+
 				}
 
-				res.setHeader('Content-Type', 'application/json');
-				res.status(200).send(JSON.stringify(response));
 			} else {
 				res.status(400).send({ success: false, msg: err.sqlMessage });
 			}
