@@ -165,6 +165,10 @@ module.exports = function (app, passport, SERVER_SECRET) {
 	// http://10.1.101.206:5000/endpoint/v1/get/getScores123
 	app.get('/endpoint/v1/get/getScores123', authenticate, REST_GET.getScores123);
 
+	// GET, EndPoint:
+	// http://10.1.101.206:5000/endpoint/v1/get/getScores4567
+	app.get('/endpoint/v1/get/getScores4567', authenticate, REST_GET.getScores4567);
+
 	// POST, Endpoint:
 	// https://127.0.0.1:5000/endpoint/v1/add/category?categoryName=&categoryScore=
 	app.post('/endpoint/v1/add/category', authenticate, REST_POST.addOneCategory);

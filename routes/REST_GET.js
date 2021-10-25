@@ -452,10 +452,141 @@ exports.getScores123 = function (req, res) {
 																	score: rows[2].userCategoryScore
 																});
 
-																response.push({ status : true , result : final})
+																response.push({ status: true, result: final })
 																res.setHeader('Content-Type', 'application/json');
 																res.status(200).send(JSON.stringify(response));
 
+															} else {
+																response.push({ status: false, 'msg': 'No Results Found' });
+															}
+
+														} else {
+															res.status(400).send(err);
+														}
+													})
+
+											} else {
+												response.push({ status: false, 'msg': 'No Results Found' });
+											}
+
+										} else {
+											res.status(400).send(err);
+										}
+									})
+
+							} else {
+								response.push({ status: false, 'msg': 'No Results Found' });
+							}
+
+						} else {
+							res.status(400).send(err);
+						}
+					})
+
+
+			} else {
+				res.status(400).send(err);
+			}
+		});
+};
+
+// http://10.1.101.206:5000/endpoint/v1/get/getScores4567
+exports.getScores4567 = function (req, res) {
+	var connection = require('../model/dbconnection');
+	var val = req.query.q;
+
+	// If order not speficied, then use order date
+	if (typeof req.query.order == 'undefined') {
+		var order = 'userCategoryScore';
+	} else {
+		var order = req.query.order;
+	}
+
+	// get value of limit
+	if (typeof req.query.limit == 'undefined') {
+		var limit = 4;
+	} else {
+		var limit = parseInt(req.query.limit);
+	}
+
+	if (limit > 500 || limit < 1) {
+		limit = 100;
+	}
+
+	// get offset value from requested page
+	if (typeof req.query.page == 'undefined') {
+		var page = 1;
+	} else {
+		var page = parseInt(req.query.page);
+	}
+
+	var offset = 3
+	// limit * (page - 1);
+
+	var response = [];
+	var final = [];
+
+	connection.query('SELECT usersid, userCategoryScore FROM scores ORDER BY ?? DESC LIMIT ? OFFSET ? ',
+		[order, limit, offset]
+		, function (err, rows, fields) {
+			if (!err) {
+
+				connection.query(`SELECT username FROM users WHERE id = ${rows[0].usersid}`
+					, function (err, innerrows, fields) {
+
+						if (!err) {
+							if (innerrows.length != 0) {
+
+								final.push({
+									name: innerrows[0].username,
+									score: rows[0].userCategoryScore
+								});
+
+								connection.query(`SELECT username FROM users WHERE id = ${rows[1].usersid}`
+									, function (err, innerrows, fields) {
+
+										if (!err) {
+											if (innerrows.length != 0) {
+
+												final.push({
+													name: innerrows[0].username,
+													score: rows[1].userCategoryScore
+												});
+
+												connection.query(`SELECT username FROM users WHERE id = ${rows[2].usersid}`
+													, function (err, innerrows, fields) {
+
+														if (!err) {
+															if (innerrows.length != 0) {
+
+																final.push({
+																	name: innerrows[0].username,
+																	score: rows[2].userCategoryScore
+																});
+
+																connection.query(`SELECT username FROM users WHERE id = ${rows[3].usersid}`
+																	, function (err, innerrows, fields) {
+
+																		if (!err) {
+																			if (innerrows.length != 0) {
+
+																				final.push({
+																					name: innerrows[0].username,
+																					score: rows[3].userCategoryScore
+																				});
+
+																				response.push({ status: true, result: final })
+																				res.setHeader('Content-Type', 'application/json');
+																				res.status(200).send(JSON.stringify(response));
+
+																			} else {
+																				response.push({ status: false, 'msg': 'No Results Found' });
+																			}
+
+																		} else {
+																			res.status(400).send(err);
+																		}
+																	})
 															} else {
 																response.push({ status: false, 'msg': 'No Results Found' });
 															}
