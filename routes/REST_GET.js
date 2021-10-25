@@ -379,8 +379,8 @@ exports.getScorebyUser = function (req, res) {
 		});
 };
 
-// http://10.1.101.206:5000/endpoint/v1/get/getHighest3scores
-exports.getHighest3scores = function (req, res) {
+// http://10.1.101.206:5000/endpoint/v1/get/getScores123
+exports.getScores123 = function (req, res) {
 	var connection = require('../model/dbconnection');
 	var val = req.query.q;
 
