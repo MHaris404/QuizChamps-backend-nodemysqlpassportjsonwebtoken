@@ -412,6 +412,7 @@ exports.getHighest3scores = function (req, res) {
 	var offset = limit * (page - 1);
 
 	var response = [];
+	var final = [];
 
 	connection.query('SELECT usersid, userCategoryScore FROM scores ORDER BY ?? DESC LIMIT ? OFFSET ? ',
 		[order, limit, offset]
@@ -424,7 +425,7 @@ exports.getHighest3scores = function (req, res) {
 						if (!err) {
 							if (innerrows.length != 0) {
 
-								response.push({
+								final.push({
 									name: innerrows[0].username,
 									score: rows[0].userCategoryScore
 								});
@@ -435,7 +436,7 @@ exports.getHighest3scores = function (req, res) {
 										if (!err) {
 											if (innerrows.length != 0) {
 
-												response.push({
+												final.push({
 													name: innerrows[0].username,
 													score: rows[1].userCategoryScore
 												});
@@ -446,11 +447,12 @@ exports.getHighest3scores = function (req, res) {
 														if (!err) {
 															if (innerrows.length != 0) {
 
-																response.push({
+																final.push({
 																	name: innerrows[0].username,
 																	score: rows[2].userCategoryScore
 																});
 
+																response.push({ status : true , result : final})
 																res.setHeader('Content-Type', 'application/json');
 																res.status(200).send(JSON.stringify(response));
 
